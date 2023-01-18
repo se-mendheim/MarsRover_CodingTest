@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace DealerOn_Coding_Test
 {
@@ -15,8 +16,6 @@ namespace DealerOn_Coding_Test
 		/// </summary>
 		public void MarsRoverMission()
 		{
-			// variable used to check if the mission is active
-			bool activeMission = true;
 			// variable used to determine if user is inputting bounds for plateau
 			bool firstInput = true;
 
@@ -24,22 +23,21 @@ namespace DealerOn_Coding_Test
 			int xBound = -1;
 			int yBound = -1;
 
-			while (activeMission)
+			Dictionary<Rover, string> rovers = new Dictionary<Rover, string>();
+
+			Console.WriteLine("Enter \"EXECUTE\" when finished");
+			while (true)
 			{
 				// initialize a new rover
 				var rover = new Rover();
 
 				if (firstInput)
 				{
-					string plateauBoundsInput = "";
-					// get the plateau bounds from the user
-					while (true)
+					var plateauBoundsInput = PlateauBoundsInput();
+					// checking if the user terminated the program
+					if (plateauBoundsInput == null)
 					{
-						plateauBoundsInput = Console.ReadLine();
-						if (CheckPlateauBoundsInput(plateauBoundsInput))
-						{
-							break;
-						}
+						break;
 					}
 
 					var plateauBounds = plateauBoundsInput.Split();
@@ -47,38 +45,134 @@ namespace DealerOn_Coding_Test
 					xBound = int.Parse(plateauBounds[0]);
 					yBound = int.Parse(plateauBounds[1]);
 					firstInput = false;
+					
 				}
 
 				// relay the x and y bounds of the plateau to the rover
 				rover.XBound = xBound;
 				rover.YBound = yBound;
 
-				// placeholder variable which will be updated once the input is verified
-				var roverPosition = new string[3];
-				// get the rover position from the user
-				while (true)
+				var roverPosition = RoverPositionInput(xBound, yBound);
+				// checking if the user terminated the program
+				if (roverPosition == null)
 				{
-					var roverPositionInput = Console.ReadLine();
-
-					if (CheckRoverPositionInput(roverPositionInput) && CheckRoverPositionOutOfBounds(xBound, yBound, roverPositionInput))
-					{
-						roverPosition = roverPositionInput.Split();
-						break;
-					}
+					break;
 				}
 
+				
 				// set x and y position and x facing direction
 				rover.XPosition = Int32.Parse(roverPosition[0]);
 				rover.YPosition = Int32.Parse(roverPosition[1]);
 				// upper case the inputted direction to allow IndexOf to properly handle the character
 				rover.ZFacing = Array.IndexOf(cardinalDirections, char.ToUpper(roverPosition[2][0]));
 
-				// placeholder variable which will be updated once the input is verified
-				var roverInstructions = "";
+
+				var roverInstructions = RoverInstructionsInput();
+				// checking if the user terminated the program
+				if (roverInstructions == null)
+				{
+					break;
+				}
+				
+				// add the rover and it's instructions to an arraylist
+				rovers.Add(rover, roverInstructions);
+			}
+
+			// make sure at least one rover went on a mission
+			if (rovers.Count >= 1)
+			{
+				foreach (var rover in rovers)
+				{
+					// execute the given instructions for the specified rover
+					ExecuteRoverInstructions(rover.Value, rover.Key);
+
+					var roverPosition = rover.Key.SendUpdatedPosition();
+
+					// write to the user the position and z facing direction of the rover
+					Console.WriteLine($"{roverPosition[0]} {roverPosition[1]} {cardinalDirections[roverPosition[2]]}");
+				}
+			}
+			else
+			{
+				Console.WriteLine("No rovers were sent to Mars");
+			}
+			
+		}
+
+		/// <summary>
+		/// Method <c>PleateauBoundsInput</c> gets the pleateau bounds from the user
+		/// </summary>
+		/// <returns>plateu bounds</returns>
+		public string PlateauBoundsInput()
+		{
+			string plateauBoundsInput = "";
+
+			// get the plateau bounds from the user
+			while (true)
+			{
+				plateauBoundsInput = Console.ReadLine();
+				// check if the user is finished with input
+				if (plateauBoundsInput.ToUpper().Equals("EXECUTE"))
+				{
+					return null;
+				}
+				if (CheckPlateauBoundsInput(plateauBoundsInput))
+				{
+					break;
+				}
+			}
+
+			return plateauBoundsInput;
+		}
+
+		/// <summary>
+		/// Method <c>RoverPositionInput</c> gets the rover position and facing direction from the user
+		/// </summary>
+		/// <param name="xBound"> x bound of the plateau</param>
+		/// <param name="yBound"> y bound of the plateau</param>
+		/// <returns>Rover position and facing direction</returns>
+		public string[] RoverPositionInput(int xBound, int yBound)
+		{
+			// placeholder variable which will be updated once the input is verified
+			var roverPosition = new string[3];
+
+			// get the rover position from the user
+			while (true)
+			{
+				var roverPositionInput = Console.ReadLine();
+				// check if the user is finished with input
+				if (roverPositionInput.ToUpper().Equals("EXECUTE"))
+				{
+					return null;
+				}
+				if (CheckRoverPositionInput(roverPositionInput) && CheckRoverPositionOutOfBounds(xBound, yBound, roverPositionInput))
+				{
+					roverPosition = roverPositionInput.Split();
+					break;
+				}
+			}
+
+			return roverPosition;
+		}
+
+		/// <summary>
+		/// Method <c>ReoverInstructionsInput</c> gets the rover instructions from the user
+		/// </summary>
+		/// <returns> Instructions for the rover to perform</returns>
+		public string RoverInstructionsInput()
+		{
+			// placeholder variable which will be updated once the input is verified
+			var roverInstructions = "";
+
 				// get the rover action instructions from the user
 				while (true)
 				{
 					var roverInstructionsInput = Console.ReadLine();
+					// check if the user is finished with input
+					if (roverInstructionsInput.ToUpper().Equals("EXECUTE"))
+					{
+						return null;
+					}
 					if (CheckRoverInstructionsInput(roverInstructionsInput))
 					{
 						// change the string to upper case for switch statement reading
@@ -86,12 +180,7 @@ namespace DealerOn_Coding_Test
 						break;
 					}
 				}
-
-				ExecuteRoverInstructions(roverInstructions, rover);
-
-				// write to the user the position and z facing direction of the rover
-				Console.WriteLine($"{rover.XPosition} {rover.YPosition} {cardinalDirections[rover.ZFacing]}");
-			}
+			return roverInstructions;
 		}
 
 		/// <summary>

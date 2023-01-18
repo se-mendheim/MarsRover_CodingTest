@@ -130,5 +130,10 @@ namespace DealerOn_Coding_Test
 
             return true;
         }
+
+        public int[] SendUpdatedPosition()
+        {
+            return new int[] { XPosition, YPosition, ZFacing };
+        }
     }
 }
