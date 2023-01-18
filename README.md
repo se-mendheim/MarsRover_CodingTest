@@ -45,8 +45,5 @@ Here Rover recieves the (x, y) bounds of the plateau, it's current position and 
 I assumed a few things during the building of this project.
 1. **Users will input incorrectly formatted commands (most likely on accident) that I need to account for**
    - To account for this I implemented a system on each user input, verify the command is in the correct format and does not exceed any bounds previously set. If it does, have the user reenter the command.
-2. **The only kill switch is to shut off the program or the computer**
-   - I thought about implementing a command to close the program (i.e. type "exit" and the program shuts off). But from a realistic perspective NASA wouldn't terminate the program through a command. They would most likely continue running the program while they have rovers to send and when either all the rovers are finished or stop responding NASA will merely turn off the program/computer.
-   - NOTE: adding a kill command would be very simple, however I did not think it matched the structure of this program.
-3. **Cardinal compass points should be represented 0 1 2 3 (0 = North, 1 = West, 2 = South, 3 = East)**
+2. **Cardinal compass points should be represented 0 1 2 3 (0 = North, 1 = West, 2 = South, 3 = East)**
    - Initially I had the rover compute it's cardinal direction through a series of if statements/a switch statement. Quickly I realized how redundant the code was and how easily it could be simplified. I assigned each cardinal direction to a number and performed a simple +/- calculation to determine the rover's facing direction. On the edge cases of 0 and 3 I added a single if statement.
