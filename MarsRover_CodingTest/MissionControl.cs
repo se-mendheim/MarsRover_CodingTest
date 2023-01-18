@@ -230,15 +230,16 @@ namespace DealerOn_Coding_Test
 		public bool CheckRoverPositionOutOfBounds(int xBound, int yBound, string roverPosition)
 		{
 			var roverPositions = roverPosition.Trim().Split();
-			// check if the x or y positon the user entered is outside the plateau bounds
-			if (Int32.Parse(roverPositions[0]) > xBound || Int32.Parse(roverPositions[1]) > yBound)
-			{
-				Console.WriteLine("Rover x or y position out of plateau bounds");
-				return false;
-			}
-			else if (roverPositions.Length > 3)
+
+			if (roverPositions.Length > 3 || roverPositions.Length < 3)
 			{
 				Console.WriteLine("Incorrect Formatting for rover position. Please enter: number number (one of these characters: NWSE)");
+				return false;
+			}
+			// check if the x or y positon the user entered is outside the plateau bounds
+			else if (Int32.Parse(roverPositions[0]) > xBound || Int32.Parse(roverPositions[1]) > yBound)
+			{
+				Console.WriteLine("Rover x or y position out of plateau bounds");
 				return false;
 			}
 			return true;
