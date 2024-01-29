@@ -28,6 +28,9 @@ namespace DealerOn_Coding_Test
 			Console.WriteLine("Enter \"EXECUTE\" when finished");
 			while (true)
 			{
+
+
+				
 				// initialize a new rover
 				var rover = new Rover();
 
